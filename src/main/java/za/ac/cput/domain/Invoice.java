@@ -1,5 +1,11 @@
 package za.ac.cput.domain;
+/* Invoice.java
 
+     Invoice POJO class
+
+     Author: X Masimbe (222410817)
+
+     Date: 11 May 2025 */
 public class Invoice {
     private int invoiceNumber;
     private String invoiceDate;
