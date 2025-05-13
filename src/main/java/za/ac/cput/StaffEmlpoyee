@@ -1,0 +1,13 @@
+public class StaffEmployee extends Employee {
+    String departmentShift;
+    String shiftTime;
+
+    public StaffEmployee(int employeeNumber, double salary, String position,
+                         ContactDetails contactDetails, PersonInfo personInfo,
+                         String departmentShift, String shiftTime) {
+        super(employeeNumber, salary, position, contactDetails, personInfo);
+        this.departmentShift = departmentShift;
+        this.shiftTime = shiftTime;
+    }
+
+}
