@@ -1,3 +1,5 @@
+package za.ac.cput.domain.valueobject;
+
 public class ContactDetails {
     public String email;
     private String phoneNumber;
@@ -10,3 +12,4 @@ public class ContactDetails {
     }
 
 }
+

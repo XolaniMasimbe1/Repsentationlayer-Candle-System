@@ -1,6 +1,9 @@
 package za.ac.cput.domain;
 
 
+import za.ac.cput.domain.enums.EmployeeRole;
+import za.ac.cput.domain.valueobject.ContactDetails;
+import za.ac.cput.domain.valueobject.PersonInfo;
 
 /**
  * Abstract Employee POJO class
@@ -10,9 +13,9 @@ package za.ac.cput.domain;
 public class Employee {
     protected  int employeeNumber;
     protected  double salary;
-    protected  String position;
-    protected  ContactDetails contactDetails;
-    protected  PersonInfo personInfo;
+    protected EmployeeRole role;
+    protected ContactDetails contactDetails;
+    protected PersonInfo personInfo;
 
    public Employee(){
 
@@ -20,7 +23,7 @@ public class Employee {
     public Employee(Builder builder) {
         this.employeeNumber = builder.employeeNumber;
         this.salary = builder.salary;
-        this.position = builder.position;
+        this.role = builder.role;
         this.contactDetails = builder.contactDetails;
         this.personInfo = builder.personInfo;
     }
@@ -33,8 +36,8 @@ public class Employee {
         return salary;
     }
 
-    public String getPosition() {
-        return position;
+    public EmployeeRole getRole() {
+        return role;
     }
 
     public ContactDetails getContactDetails() {
@@ -47,7 +50,7 @@ public class Employee {
     public static class Builder{
         private int employeeNumber;
         private double salary;
-        private String position;
+        private EmployeeRole role;
         private ContactDetails contactDetails;
         private PersonInfo personInfo;
 
@@ -60,9 +63,8 @@ public class Employee {
             this.salary = salary;
             return this;
         }
-
-        public Builder setPosition(String position) {
-            this.position = position;
+        public Builder setRole(EmployeeRole role) {
+            this.role = role;
             return this;
         }
 
@@ -78,7 +80,7 @@ public class Employee {
         public Builder copy(Employee employee) {
             this.employeeNumber = employee.employeeNumber;
             this.salary = employee.salary;
-            this.position = employee.position;
+            this.role = employee.role;
             this.contactDetails = employee.contactDetails;
             this.personInfo = employee.personInfo;
             return this;

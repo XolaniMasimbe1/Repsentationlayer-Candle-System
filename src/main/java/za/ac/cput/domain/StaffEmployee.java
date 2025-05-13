@@ -1,5 +1,11 @@
 package za.ac.cput.domain;
 
+import za.ac.cput.domain.enums.EmployeeRole;
+import za.ac.cput.domain.valueobject.ContactDetails;
+import za.ac.cput.domain.valueobject.PersonInfo;
+
+import javax.management.relation.Role;
+
 public class StaffEmployee extends Employee{
     private String departmentShift;
     private String shiftTime;
@@ -27,11 +33,11 @@ public class StaffEmployee extends Employee{
         return "StaffEmployee{" +
                 "departmentShift='" + departmentShift + '\'' +
                 ", shiftTime='" + shiftTime + '\'' +
-                ", employeeNumber=" + employeeNumber +
-                ", salary=" + salary +
-                ", position='" + position + '\'' +
-                ", contactDetails=" + contactDetails +
                 ", personInfo=" + personInfo +
+                ", contactDetails=" + contactDetails +
+                ", role=" + role +
+                ", salary=" + salary +
+                ", employeeNumber=" + employeeNumber +
                 '}';
     }
 
@@ -59,10 +65,9 @@ public class StaffEmployee extends Employee{
             super.setSalary(salary);
             return this;
         }
-
         @Override
-        public Builder setPosition(String position) {
-            super.setPosition(position);
+        public Builder setRole(EmployeeRole role) {
+            super.setRole(role);
             return this;
         }
 

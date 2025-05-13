@@ -1,6 +1,7 @@
 package za.ac.cput.domain;
 
-import org.junit.jupiter.api.Order;
+import za.ac.cput.domain.enums.DeliveryStatus;
+import za.ac.cput.domain.valueobject.ContactDetails;
 
 import java.util.Date;
 
@@ -9,7 +10,7 @@ public class Delivery {
     private int deliveryNumber;
     private String distrubutionLocation;
     private Date deliveryDate;
-    private String deliveryStatus;
+    private DeliveryStatus deliveryStatus;
     private String driverName;
     private String trackingNumber;
     private Order order;
@@ -43,7 +44,7 @@ public class Delivery {
         return deliveryDate;
     }
 
-    public String getDeliveryStatus() {
+    public DeliveryStatus getDeliveryStatus() {
         return deliveryStatus;
     }
 
@@ -63,9 +64,10 @@ public class Delivery {
         return driverContactDetails;
     }
 
-    public void updateDeliveryStatus(String status) {
-        this.deliveryStatus = status;
-    }
+    //    public void updateDeliveryStatus(String status) {
+//        this.deliveryStatus = status;
+//    }
+
 
     @Override
     public String toString() {
@@ -73,18 +75,19 @@ public class Delivery {
                 "deliveryNumber=" + deliveryNumber +
                 ", distrubutionLocation='" + distrubutionLocation + '\'' +
                 ", deliveryDate=" + deliveryDate +
-                ", deliveryStatus='" + deliveryStatus + '\'' +
+                ", deliveryStatus=" + deliveryStatus +
                 ", driverName='" + driverName + '\'' +
                 ", trackingNumber='" + trackingNumber + '\'' +
                 ", order=" + order +
                 ", driverContactDetails=" + driverContactDetails +
                 '}';
     }
+
     public static class Builder {
         private int deliveryNumber;
         private String distrubutionLocation;
         private Date deliveryDate;
-        private String deliveryStatus;
+        private DeliveryStatus deliveryStatus;
         private String driverName;
         private String trackingNumber;
         private Order order;
@@ -105,7 +108,7 @@ public class Delivery {
             return this;
         }
 
-        public Builder setDeliveryStatus(String deliveryStatus) {
+        public Builder setDeliveryStatuss(DeliveryStatus deliveryStatus) {
             this.deliveryStatus = deliveryStatus;
             return this;
         }
@@ -142,6 +145,7 @@ public class Delivery {
         }
 
         public Delivery build() {
+
             return new Delivery(this);
         }
     }

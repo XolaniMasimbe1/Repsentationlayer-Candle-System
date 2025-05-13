@@ -6,6 +6,8 @@ package za.ac.cput.domain;
      Author: X Masimbe (222410817)
 
      Date: 11 May 2025 */
+import za.ac.cput.domain.valueobject.ContactDetails;
+
 import java.util.List;
 
 public class RetailStore {

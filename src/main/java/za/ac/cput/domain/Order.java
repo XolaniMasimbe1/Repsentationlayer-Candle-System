@@ -1,6 +1,8 @@
 package za.ac.cput.domain;
 
 
+import za.ac.cput.domain.enums.OrderStatus;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.List;
 public class Order {
     private int orderNumber;
     private Date orderDate;
-    private String status;
+    private OrderStatus status;
     private List<OrderItem> items;
     private double totalAmount;
     private Invoice invoice;
@@ -42,7 +44,10 @@ public class Order {
 
     public Date getOrderDate() { return orderDate; }
 
-    public String getStatus() { return status; }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
 
     public List<OrderItem> getItems() { return items; }
 
@@ -56,7 +61,7 @@ public class Order {
         return "Order{" +
                 "orderNumber=" + orderNumber +
                 ", orderDate=" + orderDate +
-                ", status='" + status + '\'' +
+                ", status=" + status +
                 ", items=" + items +
                 ", totalAmount=" + totalAmount +
                 ", invoice=" + invoice +
@@ -66,7 +71,7 @@ public class Order {
     public static class Builder {
         private int orderNumber;
         private Date orderDate;
-        private String status;
+        private OrderStatus status;
         private List<OrderItem> items = new ArrayList<>();
         private double totalAmount;
         private Invoice invoice;
@@ -81,7 +86,7 @@ public class Order {
             return this;
         }
 
-        public Builder status(String status) {
+        public Builder status(OrderStatus status) {
             this.status = status;
             return this;
         }

@@ -1,12 +1,14 @@
 package za.ac.cput.domain;
 
+import za.ac.cput.domain.valueobject.ContactDetails;
+
 import java.util.List;
 
 public class Manufacture {
     private  int manufactureNumber;
     private  String manufactureName;
     private  String inventoryStock;
-    private  ContactDetails contactDetails;
+    private ContactDetails contactDetails;
     private  List<Candle> candles;
     private  List<Delivery> deliveries;
 

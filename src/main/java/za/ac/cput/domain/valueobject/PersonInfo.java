@@ -1,3 +1,5 @@
+package za.ac.cput.domain.valueobject;
+
 import java.util.Date;
 
 public class PersonInfo {
