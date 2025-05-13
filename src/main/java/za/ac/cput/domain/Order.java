@@ -26,18 +26,16 @@ public class Order {
         this.invoice = builder.invoice;
     }
 
-    public Invoice generateInvoice() {
-        if (this.invoice == null) {
-            this.invoice = new Invoice.Builder()
-                    .setInvoiceNumber(generateInvoiceNumber())
-                    .setInvoiceDate(new Date().toString())
-                    .setTotalAmount(calculateTotal())
-                    .build();
-        }
-        return this.invoice;
-    }
-
-
+//    public Invoice generateInvoice() {
+//        if (this.invoice == null) {
+//            this.invoice = new Invoice.Builder()
+//                    .setInvoiceNumber(generateInvoiceNumber())
+//                    .setInvoiceDate(new Date().toString())
+//                    .setTotalAmount(calculateTotal())
+//                    .build();
+//        }
+//        return this.invoice;
+//    }
 
 
     public int getOrderNumber() { return orderNumber; }
@@ -107,24 +105,36 @@ public class Order {
             this.invoice = invoice;
             return this;
         }
-
-        public Order build() {
-            Order order = new Order(this);
-            if (order.totalAmount == 0) {
-                order.totalAmount = order.calculateTotal();
-            }
-            return order;
+        public Builder copy(Order order) {
+            this.orderNumber = order.orderNumber;
+            this.orderDate = order.orderDate;
+            this.status = order.status;
+            this.items = order.items;
+            this.totalAmount = order.totalAmount;
+            this.invoice = order.invoice;
+            return this;
         }
-    }
-    private int generateInvoiceNumber() {
-        // In a real system, this would come from a sequence or service
-        return this.orderNumber * 1000 + (int)(Math.random() * 999);
-    }
+        public Order build() {
+            return new Order(this);
+        }
 
-    public double calculateTotal() {
-        if (items == null) return 0.0;
-        return items.stream()
-                .mapToDouble(OrderItem::getSubtotal)
-                .sum();
+//        public Order build() {
+//            Order order = new Order(this);
+//            if (order.totalAmount == 0) {
+//                order.totalAmount = order.calculateTotal();
+//            }
+//            return order;
+//        }
     }
+//    private int generateInvoiceNumber() {
+//        // In a real system, this would come from a sequence or service
+//        return this.orderNumber * 1000 + (int)(Math.random() * 999);
+//    }
+//
+//    public double calculateTotal() {
+//        if (items == null) return 0.0;
+//        return items.stream()
+//                .mapToDouble(OrderItem::getSubtotal)
+//                .sum();
+//    }
 }

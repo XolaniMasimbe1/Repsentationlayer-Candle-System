@@ -13,11 +13,11 @@ public class Delivery {
     private String driverName;
     private String trackingNumber;
     private Order order;
-    private contactDetails driverContactDetails;
+    private ContactDetails driverContactDetails;
 
 
 
-    private Delivery() {
+    public Delivery() {
     }
 
     public Delivery(Builder builder) {
@@ -59,7 +59,7 @@ public class Delivery {
         return order;
     }
 
-    public contactDetails getDriverContactDetails() {
+    public ContactDetails getDriverContactDetails() {
         return driverContactDetails;
     }
 
@@ -88,7 +88,7 @@ public class Delivery {
         private String driverName;
         private String trackingNumber;
         private Order order;
-        private contactDetails driverContactDetails;
+        private ContactDetails driverContactDetails;
 
         public Builder setDeliveryNumber(int deliveryNumber) {
             this.deliveryNumber = deliveryNumber;
@@ -125,7 +125,7 @@ public class Delivery {
             return this;
         }
 
-        public Builder setDriverContactDetails(contactDetails driverContactDetails) {
+        public Builder setDriverContactDetails(ContactDetails driverContactDetails) {
             this.driverContactDetails = driverContactDetails;
             return this;
         }

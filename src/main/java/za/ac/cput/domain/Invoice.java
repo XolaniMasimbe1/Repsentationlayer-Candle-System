@@ -11,7 +11,7 @@ public class Invoice {
     private String invoiceDate;
     private double totalAmount;
 
-    private Invoice() {
+    public Invoice() {
     }
 
     public Invoice(Builder builder) {

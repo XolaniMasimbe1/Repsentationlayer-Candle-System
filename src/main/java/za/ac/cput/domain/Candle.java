@@ -18,13 +18,13 @@ public class Candle {
         this.category = builder.category;
     }
 
-    public void produceCandles() {
-        // Business logic
-    }
-
-    public void updateInventory() {
-        // Inventory logic
-    }
+//    public void produceCandles() {
+//        // Business logic
+//    }
+//
+//    public void updateInventory() {
+//        // Inventory logic
+//    }
 
     public int getCandleNumber() {
         return candleNumber;
@@ -97,6 +97,15 @@ public class Candle {
 
         public Builder category(String category) {
             this.category = category;
+            return this;
+        }
+        public Builder copy(Candle candle) {
+            this.candleNumber = candle.candleNumber;
+            this.name = candle.name;
+            this.scent = candle.scent;
+            this.price = candle.price;
+            this.color = candle.color;
+            this.category = candle.category;
             return this;
         }
 

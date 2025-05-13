@@ -6,8 +6,12 @@ package za.ac.cput.domain;
  * Date: 11/05/2025
  */
 public class Manager extends Employee {
-    private final String managerLevel;
-    private final int numEmployees;
+    private  String managerLevel;
+    private  int numEmployees;
+
+    public Manager() {
+        super();
+    }
 
     private Manager(Builder builder) {
         super(builder);
@@ -16,7 +20,7 @@ public class Manager extends Employee {
     }
 
 
-    public static class Builder extends Employee.Builder<Builder> {
+    public static class Builder extends Employee.Builder {
         private String managerLevel;
         private int numEmployees;
 
@@ -29,12 +33,38 @@ public class Manager extends Employee {
             this.numEmployees = numEmployees;
             return this;
         }
-
         @Override
-        protected Builder self() {
+        public Builder setEmployeeNumber(int employeeNumber) {
+            super.setEmployeeNumber(employeeNumber);
+            return this;
+        }
+        @Override
+        public Builder setSalary(double salary) {
+            super.setSalary(salary);
+            return this;
+        }
+        @Override
+        public Builder setPosition(String position) {
+            super.setPosition(position);
+            return this;
+        }
+        @Override
+        public Builder setContactDetails(ContactDetails contactDetails) {
+            super.setContactDetails(contactDetails);
+            return this;
+        }
+        @Override
+        public Builder setPersonInfo(PersonInfo personInfo) {
+            super.setPersonInfo(personInfo);
             return this;
         }
 
+        public Builder copy(Manager manager) {
+            super.copy(manager);
+            this.managerLevel = manager.managerLevel;
+            this.numEmployees = manager.numEmployees;
+            return this;
+        }
         @Override
         public Manager build() {
             return new Manager(this);

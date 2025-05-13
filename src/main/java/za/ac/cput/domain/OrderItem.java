@@ -9,6 +9,9 @@ public class OrderItem {
     private Candle candle;
     private String category;
 
+    public OrderItem() {
+    }
+
     private OrderItem(Builder builder) {
         this.quantity = builder.quantity;
         this.unitPrice = builder.unitPrice;
@@ -92,9 +95,22 @@ public class OrderItem {
             return this;
         }
 
-        public OrderItem build() {
-            this.subtotal = quantity * unitPrice;
-            return new OrderItem(this);
+        public Builder copy(OrderItem orderItem) {
+            this.quantity = orderItem.quantity;
+            this.unitPrice = orderItem.unitPrice;
+            this.subtotal = orderItem.subtotal;
+            this.order = orderItem.order;
+            this.candle = orderItem.candle;
+            this.category = orderItem.category;
+            return this;
         }
+        public static Builder builder() {
+            return new Builder();
+        }
+
+//        public OrderItem build() {
+//            this.subtotal = quantity * unitPrice;
+//            return new OrderItem(this);
+//        }
     }
 }

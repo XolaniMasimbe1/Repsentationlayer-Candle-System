@@ -3,20 +3,15 @@ package za.ac.cput.domain;
 import java.util.List;
 
 public class Manufacture {
-    private final int manufactureNumber;
-    private final String manufactureName;
-    private final String inventoryStock;
-    private final ContactDetails contactDetails;
-    private final List<Candle> candles;
-    private final List<Delivery> deliveries;
+    private  int manufactureNumber;
+    private  String manufactureName;
+    private  String inventoryStock;
+    private  ContactDetails contactDetails;
+    private  List<Candle> candles;
+    private  List<Delivery> deliveries;
 
     private Manufacture() {
-        this.manufactureNumber = 0;
-        this.manufactureName = null;
-        this.inventoryStock = null;
-        this.contactDetails = null;
-        this.candles = null;
-        this.deliveries = null;
+
     }
 
     private Manufacture(Builder builder) {
@@ -29,31 +24,32 @@ public class Manufacture {
     }
 
     public int getManufactureNumber() {
+
         return manufactureNumber;
     }
 
     public String getManufactureName() {
+
         return manufactureName;
     }
 
     public String getInventoryStock() {
+
         return inventoryStock;
     }
 
     public ContactDetails getContactDetails() {
+
         return contactDetails;
     }
 
     public List<Candle> getCandles() {
+
         return candles;
     }
 
     public List<Delivery> getDeliveries() {
         return deliveries;
-    }
-
-    public void updateInventoryStock(String newStock) {
-        this.inventoryStock = newStock;
     }
 
     @Override

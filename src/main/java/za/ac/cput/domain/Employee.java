@@ -1,18 +1,23 @@
 package za.ac.cput.domain;
 
+
+
 /**
  * Abstract Employee POJO class
  * Author: Siphosenkosi (221140700)
  * Date: 11/05/2025
  */
-public abstract class Employee {
-    protected final int employeeNumber;
-    protected final double salary;
-    protected final String position;
-    protected final contactDetails contactDetails;
-    protected final PersonalInfo personInfo;
+public class Employee {
+    protected  int employeeNumber;
+    protected  double salary;
+    protected  String position;
+    protected  ContactDetails contactDetails;
+    protected  PersonInfo personInfo;
 
-    protected Employee(Builder<?> builder) {
+   public Employee(){
+
+  }
+    public Employee(Builder builder) {
         this.employeeNumber = builder.employeeNumber;
         this.salary = builder.salary;
         this.position = builder.position;
@@ -20,42 +25,68 @@ public abstract class Employee {
         this.personInfo = builder.personInfo;
     }
 
-    // Getters omitted for brevity
+    public int getEmployeeNumber() {
+        return employeeNumber;
+    }
 
-    public abstract static class Builder<T extends Builder<T>> {
+    public double getSalary() {
+        return salary;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public ContactDetails getContactDetails() {
+        return contactDetails;
+    }
+
+    public PersonInfo getPersonInfo() {
+        return personInfo;
+    }
+    public static class Builder{
         private int employeeNumber;
         private double salary;
         private String position;
-        private contactDetails contactDetails;
-        private PersonalInfo personInfo;
+        private ContactDetails contactDetails;
+        private PersonInfo personInfo;
 
-        public T employeeNumber(int employeeNumber) {
+        public Builder setEmployeeNumber(int employeeNumber) {
             this.employeeNumber = employeeNumber;
-            return self();
+            return this;
         }
 
-        public T salary(double salary) {
+        public Builder setSalary(double salary) {
             this.salary = salary;
-            return self();
+            return this;
         }
 
-        public T position(String position) {
+        public Builder setPosition(String position) {
             this.position = position;
-            return self();
+            return this;
         }
 
-        public T contactDetails(contactDetails contactDetails) {
+        public Builder setContactDetails(ContactDetails contactDetails) {
             this.contactDetails = contactDetails;
-            return self();
+            return this;
         }
 
-        public T personInfo(PersonalInfo personInfo) {
+        public Builder setPersonInfo(PersonInfo personInfo) {
             this.personInfo = personInfo;
-            return self();
+            return this;
+        }
+        public Builder copy(Employee employee) {
+            this.employeeNumber = employee.employeeNumber;
+            this.salary = employee.salary;
+            this.position = employee.position;
+            this.contactDetails = employee.contactDetails;
+            this.personInfo = employee.personInfo;
+            return this;
         }
 
-        protected abstract T self();
-        public abstract Employee build();
+        public Employee build() {
+            return new Employee(this);
+        }
     }
 }
 
