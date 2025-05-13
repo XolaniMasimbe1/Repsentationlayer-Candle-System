@@ -1,0 +1,18 @@
+public abstract class Employee {
+    protected int employeeNumber;
+    protected double salary;
+    protected String position;
+    protected ContactDetails contactDetails;
+    protected PersonInfo personInfo;
+
+    public Employee(int employeeNumber, double salary, String position,
+                    ContactDetails contactDetails, PersonInfo personInfo) {
+        this.employeeNumber = employeeNumber;
+        this.salary = salary;
+        this.position = position;
+        this.contactDetails = contactDetails;
+        this.personInfo = personInfo;
+    }
+
+
+}
