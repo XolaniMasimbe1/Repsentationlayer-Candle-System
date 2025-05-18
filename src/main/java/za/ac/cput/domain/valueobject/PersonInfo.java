@@ -14,5 +14,17 @@ public class PersonInfo {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
     }
+    public String getFirstName() {
+        return firstName;
+    }
+    public String getLastName() {
+        return lastName;
+    }
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+    public String getGender() {
+        return gender;
+    }
 
 }
