@@ -5,18 +5,15 @@ import za.ac.cput.domain.valueobject.ContactDetails;
 import za.ac.cput.domain.valueobject.PersonInfo;
 
 /**
- * Manager POJO class extending Employee
+ * Manager class extending Employee using Builder pattern
  * Author: Siphosenkosi (221140700)
  * Date: 11/05/2025
  */
 public class Manager extends Employee {
-    private  String managerLevel;
-    private  int numEmployees;
+    private String managerLevel;
+    private int numEmployees;
 
-    public Manager() {
-        super();
-    }
-
+    // No default constructor needed anymore — using builder
     private Manager(Builder builder) {
         super(builder);
         this.managerLevel = builder.managerLevel;
@@ -38,7 +35,7 @@ public class Manager extends Employee {
                 ", numEmployees=" + numEmployees +
                 ", employeeNumber=" + employeeNumber +
                 ", salary=" + salary +
-                ", role=" + role +
+                ", position='" + position + '\'' +
                 ", contactDetails=" + contactDetails +
                 ", personInfo=" + personInfo +
                 '}';
@@ -57,26 +54,31 @@ public class Manager extends Employee {
             this.numEmployees = numEmployees;
             return this;
         }
+
         @Override
         public Builder setEmployeeNumber(int employeeNumber) {
             super.setEmployeeNumber(employeeNumber);
             return this;
         }
+
         @Override
         public Builder setSalary(double salary) {
             super.setSalary(salary);
             return this;
         }
+
         @Override
-        public Manager.Builder setRole(EmployeeRole role) {
-            super.setRole(role);
+        public Builder setPosition(String position) {
+            super.setPosition(position);
             return this;
         }
+
         @Override
         public Builder setContactDetails(ContactDetails contactDetails) {
             super.setContactDetails(contactDetails);
             return this;
         }
+
         @Override
         public Builder setPersonInfo(PersonInfo personInfo) {
             super.setPersonInfo(personInfo);
@@ -89,10 +91,10 @@ public class Manager extends Employee {
             this.numEmployees = manager.numEmployees;
             return this;
         }
+
         @Override
         public Manager build() {
             return new Manager(this);
         }
     }
 }
-

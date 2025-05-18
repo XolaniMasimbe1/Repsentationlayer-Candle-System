@@ -1,29 +1,20 @@
 package za.ac.cput.domain;
 
-
-import za.ac.cput.domain.enums.EmployeeRole;
 import za.ac.cput.domain.valueobject.ContactDetails;
 import za.ac.cput.domain.valueobject.PersonInfo;
 
-/**
- * Abstract Employee POJO class
- * Author: Siphosenkosi (221140700)
- * Date: 11/05/2025
- */
-public class Employee {
-    protected  int employeeNumber;
-    protected  double salary;
-    protected EmployeeRole role;
+public abstract class Employee {
+    protected int employeeNumber;
+    protected double salary;
+    protected String position;
     protected ContactDetails contactDetails;
     protected PersonInfo personInfo;
 
-   public Employee(){
-
-  }
-    public Employee(Builder builder) {
+    // Required protected constructor for subclasses like Manager
+    protected Employee(Builder builder) {
         this.employeeNumber = builder.employeeNumber;
         this.salary = builder.salary;
-        this.role = builder.role;
+        this.position = builder.position;
         this.contactDetails = builder.contactDetails;
         this.personInfo = builder.personInfo;
     }
@@ -36,8 +27,8 @@ public class Employee {
         return salary;
     }
 
-    public EmployeeRole getRole() {
-        return role;
+    public String getPosition() {
+        return position;
     }
 
     public ContactDetails getContactDetails() {
@@ -47,12 +38,24 @@ public class Employee {
     public PersonInfo getPersonInfo() {
         return personInfo;
     }
-    public static class Builder{
-        private int employeeNumber;
-        private double salary;
-        private EmployeeRole role;
-        private ContactDetails contactDetails;
-        private PersonInfo personInfo;
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "employeeNumber=" + employeeNumber +
+                ", salary=" + salary +
+                ", position='" + position + '\'' +
+                ", contactDetails=" + contactDetails +
+                ", personInfo=" + personInfo +
+                '}';
+    }
+
+    public static class Builder {
+        protected int employeeNumber;
+        protected double salary;
+        protected String position;
+        protected ContactDetails contactDetails;
+        protected PersonInfo personInfo;
 
         public Builder setEmployeeNumber(int employeeNumber) {
             this.employeeNumber = employeeNumber;
@@ -63,8 +66,9 @@ public class Employee {
             this.salary = salary;
             return this;
         }
-        public Builder setRole(EmployeeRole role) {
-            this.role = role;
+
+        public Builder setPosition(String position) {
+            this.position = position;
             return this;
         }
 
@@ -77,19 +81,19 @@ public class Employee {
             this.personInfo = personInfo;
             return this;
         }
+
         public Builder copy(Employee employee) {
             this.employeeNumber = employee.employeeNumber;
             this.salary = employee.salary;
-            this.role = employee.role;
+            this.position = employee.position;
             this.contactDetails = employee.contactDetails;
             this.personInfo = employee.personInfo;
             return this;
         }
 
+        // Abstract method to force subclasses to implement build()
         public Employee build() {
-            return new Employee(this);
+            throw new UnsupportedOperationException("Cannot instantiate abstract Employee directly.");
         }
     }
 }
-
-
