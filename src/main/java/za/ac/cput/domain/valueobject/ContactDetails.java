@@ -4,7 +4,7 @@ public class ContactDetails {
     public String email;
     private String phoneNumber;
     private Address address;
-    protected ContactDetails() {
+    public ContactDetails(String mail, String number, Address address) {
     }
 
     private ContactDetails(Builder builder) {

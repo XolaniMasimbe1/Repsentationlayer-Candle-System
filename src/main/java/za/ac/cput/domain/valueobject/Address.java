@@ -10,7 +10,7 @@ package za.ac.cput.domain.valueobject;
         private Long postalCode;
         private String country;
 
-        public Address() {
+        public Address(String s, String capeTown, String number, String southAfrica) {
         }
 
         private Address(Builder builder) {
