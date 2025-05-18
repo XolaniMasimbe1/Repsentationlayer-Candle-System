@@ -20,6 +20,13 @@ public class RetailStore {
     private RetailStore(){
 
     }
+    public RetailStore(Builder builder){
+        this.storeNumber = builder.storeNumber;
+        this.storeName = builder.storeName;
+        this.conctactPerson = builder.conctactPerson;
+        this.contactDetails = builder.contactDetails;
+        this.orders = builder.orders;
+    }
 
     public String getStoreNumber() {
         return storeNumber;

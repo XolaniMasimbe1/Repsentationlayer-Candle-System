@@ -1,5 +1,11 @@
 package za.ac.cput.factory;
+/* InvoiceFactoryTest.java
 
+     Invoice Factory class
+
+     Author: X Masimbe (222410817)
+
+     Date: 18 May 2025 */
 import org.junit.jupiter.api.Test;
 import za.ac.cput.domain.Invoice;
 

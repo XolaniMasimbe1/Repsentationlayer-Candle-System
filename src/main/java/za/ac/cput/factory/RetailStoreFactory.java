@@ -1,5 +1,11 @@
 package za.ac.cput.factory;
+/* RetailFactory.java
 
+     Retail Factory class
+
+     Author: X Masimbe (222410817)
+
+     Date: 18 May 2025 */
 import za.ac.cput.domain.Order;
 import za.ac.cput.domain.RetailStore;
 import za.ac.cput.domain.valueobject.ContactDetails;

@@ -6,7 +6,13 @@ import za.ac.cput.domain.RetailStore;
 import za.ac.cput.domain.enums.OrderStatus;
 import za.ac.cput.domain.valueobject.Address;
 import za.ac.cput.domain.valueobject.ContactDetails;
+/* RetailFactory.java
 
+     Retail Factory class
+
+     Author: X Masimbe (222410817)
+
+     Date: 18 May 2025 */
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
