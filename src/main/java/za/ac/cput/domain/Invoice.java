@@ -1,11 +1,17 @@
 package za.ac.cput.domain;
+/* Invoice.java
 
+     Invoice POJO class
+
+     Author: X Masimbe (222410817)
+
+     Date: 11 May 2025 */
 public class Invoice {
-    private int invoiceNumber;
+    private String invoiceNumber;
     private String invoiceDate;
     private double totalAmount;
 
-    private Invoice() {
+    public Invoice() {
     }
 
     public Invoice(Builder builder) {
@@ -14,7 +20,7 @@ public class Invoice {
         this.totalAmount = builder.totalAmount;
     }
 
-    public int getInvoiceNumber() {
+    public String getInvoiceNumber() {
         return invoiceNumber;
     }
 
@@ -36,11 +42,11 @@ public class Invoice {
     }
 
     public static class Builder {
-        private int invoiceNumber;
+        private String invoiceNumber;
         private String invoiceDate;
         private double totalAmount;
 
-        public Builder setInvoiceNumber(int invoiceNumber) {
+        public Builder setInvoiceNumber(String invoiceNumber) {
             this.invoiceNumber = invoiceNumber;
             return this;
         }

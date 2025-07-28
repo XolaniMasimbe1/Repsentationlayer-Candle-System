@@ -1,7 +1,12 @@
 package za.ac.cput.domain;
+/* RetailStore.java
 
+     RetailStore POJO class
 
-import org.junit.jupiter.api.Order;
+     Author: X Masimbe (222410817)
+
+     Date: 11 May 2025 */
+import za.ac.cput.domain.valueobject.ContactDetails;
 
 import java.util.List;
 
@@ -9,17 +14,18 @@ public class RetailStore {
     private String storeNumber;
     private String storeName;
     private String conctactPerson;
-    private contactDetails ContactDetails;
+    private ContactDetails contactDetails;
     private List<Order> orders;
 
     private RetailStore(){
 
     }
-    public RetailStore(Builder builder) {
+    public RetailStore(Builder builder){
         this.storeNumber = builder.storeNumber;
         this.storeName = builder.storeName;
         this.conctactPerson = builder.conctactPerson;
-        this.ContactDetails = builder.ContactDetails;
+        this.contactDetails = builder.contactDetails;
+        this.orders = builder.orders;
     }
 
     public String getStoreNumber() {
@@ -34,13 +40,12 @@ public class RetailStore {
         return conctactPerson;
     }
 
-    public contactDetails getContactDetails() {
-        return ContactDetails;
+    public ContactDetails getContactDetails() {
+        return contactDetails;
     }
-    public void placeOrder(Order order) {
 
-            System.out.println("Order placed successfully." + order);//deal with it later
-
+    public List<Order> getOrders() {
+        return orders;
     }
 
     @Override
@@ -49,14 +54,16 @@ public class RetailStore {
                 "storeNumber='" + storeNumber + '\'' +
                 ", storeName='" + storeName + '\'' +
                 ", conctactPerson='" + conctactPerson + '\'' +
-                ", ContactDetails=" + ContactDetails +
+                ", contactDetails=" + contactDetails +
+                ", orders=" + orders +
                 '}';
     }
-    public static class Builder{
+    public static class Builder {
         private String storeNumber;
         private String storeName;
         private String conctactPerson;
-        private contactDetails ContactDetails;
+        private ContactDetails contactDetails;
+        private List<Order> orders;
 
         public Builder setStoreNumber(String storeNumber) {
             this.storeNumber = storeNumber;
@@ -73,22 +80,38 @@ public class RetailStore {
             return this;
         }
 
-        public Builder setContactDetails(contactDetails contactDetails) {
-            ContactDetails = contactDetails;
+        public Builder setContactDetails(ContactDetails contactDetails) {
+            this.contactDetails = contactDetails;
             return this;
         }
 
+        public Builder setOrders(List<Order> orders) {
+            this.orders = orders;
+            return this;
+        }
 
-        public RetailStore copy() {
+        public RetailStore build() {
             RetailStore retailStore = new RetailStore();
             retailStore.storeNumber = this.storeNumber;
             retailStore.storeName = this.storeName;
             retailStore.conctactPerson = this.conctactPerson;
-            retailStore.ContactDetails = this.ContactDetails;
+            retailStore.contactDetails = this.contactDetails;
+            retailStore.orders = this.orders;
+
             return retailStore;
+
         }
-        public RetailStore build() {
-            return new RetailStore(this);
+        public Builder copy(RetailStore retailStore) {
+            this.storeNumber = retailStore.storeNumber;
+            this.storeName = retailStore.storeName;
+            this.conctactPerson = retailStore.conctactPerson;
+            this.contactDetails = retailStore.contactDetails;
+            this.orders = retailStore.orders;
+
+            return this;
+        }
+        public static Builder builder(){
+            return new Builder();
         }
     }
 }
