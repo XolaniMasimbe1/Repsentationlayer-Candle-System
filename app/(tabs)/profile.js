@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,22 +10,126 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
-import { User, Store, Settings, CreditCard, MapPin, Phone, Mail, LogOut, CreditCard as Edit, Save } from 'lucide-react-native';
+import { User, Store, Settings, CreditCard, MapPin, Phone, Mail, LogOut, CreditCard as Edit, Save, Package, RefreshCw } from 'lucide-react-native';
+import { useCart } from '../../context/CartContext';
+import ApiService from '../../services/api';
+import { router } from 'expo-router';
 
 export default function ProfileScreen() {
+  const { user, store, setUser, setStoreInfo } = useCart();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState({
-    username: 'john_doe',
-    email: 'john@example.com',
-    phone: '+27 11 123 4567',
-    storeName: 'Candle Paradise',
-    storeNumber: 'STR001',
+    username: '',
+    email: '',
+    phone: '',
+    storeName: '',
+    storeNumber: '',
   });
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Here you would call your API to update user info
-    Alert.alert('Success', 'Profile updated successfully');
+  // Load user and store data when component mounts or when user/store changes
+  useEffect(() => {
+    if (user || store) {
+      setUserInfo({
+        username: user?.username || store?.storeNumber || '',
+        email: user?.email || store?.contactDetails?.email || store?.email || '',
+        phone: user?.phoneNumber || store?.contactDetails?.phoneNumber || store?.phoneNumber || '',
+        storeName: store?.storeName || '',
+        storeNumber: store?.storeNumber || '',
+      });
+    }
+  }, [user, store]);
+
+  // Function to refresh user and store data
+  const refreshProfileData = async () => {
+    if (!user?.username) return;
+    
+    try {
+      setIsLoading(true);
+      // Refresh user data
+      const refreshedUser = await ApiService.getUserByUsername(user.username);
+      setUser(refreshedUser);
+      
+      // Refresh store data if available
+      if (store?.storeNumber) {
+        const refreshedStore = await ApiService.getStoreByNumber(store.storeNumber);
+        setStoreInfo(refreshedStore);
+      }
+    } catch (error) {
+      console.error('Error refreshing profile data:', error);
+      Alert.alert('Error', 'Failed to refresh profile data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!user || !store) {
+      Alert.alert('Error', 'User or store information not available');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      let updatedUser = null;
+      let updatedStore = null;
+
+      // Update user information if changed
+      if (userInfo.email !== user.email || userInfo.phone !== user.phoneNumber) {
+        const userUpdateData = {
+          ...user,
+          email: userInfo.email,
+          phoneNumber: userInfo.phone
+        };
+        
+        try {
+          updatedUser = await ApiService.updateUser(userUpdateData);
+          console.log('User updated successfully:', updatedUser);
+        } catch (userError) {
+          console.error('Failed to update user:', userError);
+          // Continue with store update even if user update fails
+        }
+      }
+
+      // Update store information if changed
+      if (userInfo.storeName !== store.storeName || 
+          userInfo.email !== (store.contactDetails?.email || store.email) ||
+          userInfo.phone !== (store.contactDetails?.phoneNumber || store.phoneNumber)) {
+        
+        const storeUpdateData = {
+          ...store,
+          storeName: userInfo.storeName,
+          contactDetails: {
+            ...store.contactDetails,
+            email: userInfo.email,
+            phoneNumber: userInfo.phone
+          }
+        };
+        
+        try {
+          updatedStore = await ApiService.updateStore(storeUpdateData);
+          console.log('Store updated successfully:', updatedStore);
+        } catch (storeError) {
+          console.error('Failed to update store:', storeError);
+        }
+      }
+
+      // Update context with new data if updates were successful
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
+      if (updatedStore) {
+        setStoreInfo(updatedStore);
+      }
+
+      setIsEditing(false);
+      Alert.alert('Success', 'Profile updated successfully');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      Alert.alert('Error', 'Failed to update profile. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLogout = () => {
@@ -34,10 +138,48 @@ export default function ProfileScreen() {
       'Are you sure you want to logout?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', onPress: () => console.log('Logout') },
+        { 
+          text: 'Logout', 
+          onPress: () => {
+            // Clear user and store data from context
+            setUser(null);
+            setStoreInfo(null);
+            // Navigate back to login screen
+            router.replace('/');
+            console.log('User logged out');
+          }
+        },
       ]
     );
   };
+
+  const handleManageProducts = () => {
+    // Navigate to product management screen
+    // You can implement navigation here
+    Alert.alert('Product Management', 'Navigate to product management screen');
+  };
+
+  const handleSalesAnalytics = () => {
+    // Navigate to sales analytics screen
+    Alert.alert('Sales Analytics', 'Navigate to sales analytics screen');
+  };
+
+  const handleStoreSettings = () => {
+    // Navigate to store settings screen
+    Alert.alert('Store Settings', 'Navigate to store settings screen');
+  };
+
+  // Show loading state if user/store data is not loaded
+  if (!user && !store) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading profile...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -45,16 +187,30 @@ export default function ProfileScreen() {
       
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={isEditing ? handleSave : () => setIsEditing(true)}
-        >
-          {isEditing ? (
-            <Save size={20} color="#F59E0B" />
-          ) : (
-            <Edit size={20} color="#F59E0B" />
+        <View style={styles.headerButtons}>
+          {!isEditing && (
+            <TouchableOpacity
+              style={[styles.headerButton, isLoading && styles.disabledButton]}
+              onPress={refreshProfileData}
+              disabled={isLoading}
+            >
+              <RefreshCw size={20} color="#6B7280" />
+            </TouchableOpacity>
           )}
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.editButton, isLoading && styles.disabledButton]}
+            onPress={isEditing ? handleSave : () => setIsEditing(true)}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Text style={styles.loadingButtonText}>...</Text>
+            ) : isEditing ? (
+              <Save size={20} color="#F59E0B" />
+            ) : (
+              <Edit size={20} color="#F59E0B" />
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -104,6 +260,7 @@ export default function ProfileScreen() {
               onChangeText={(text) => setUserInfo({...userInfo, email: text})}
               editable={isEditing}
               placeholder="Store Email"
+              keyboardType="email-address"
             />
           </View>
 
@@ -115,6 +272,7 @@ export default function ProfileScreen() {
               onChangeText={(text) => setUserInfo({...userInfo, phone: text})}
               editable={isEditing}
               placeholder="Store Phone"
+              keyboardType="phone-pad"
             />
           </View>
         </View>
@@ -123,17 +281,17 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Store Management</Text>
           
-          <TouchableOpacity style={styles.actionItem}>
+          <TouchableOpacity style={styles.actionItem} onPress={handleManageProducts}>
             <Package size={20} color="#6B7280" />
             <Text style={styles.actionText}>Manage Products</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionItem}>
+          <TouchableOpacity style={styles.actionItem} onPress={handleSalesAnalytics}>
             <CreditCard size={20} color="#6B7280" />
             <Text style={styles.actionText}>Sales Analytics</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionItem}>
+          <TouchableOpacity style={styles.actionItem} onPress={handleStoreSettings}>
             <Settings size={20} color="#6B7280" />
             <Text style={styles.actionText}>Store Settings</Text>
           </TouchableOpacity>
@@ -158,6 +316,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9FAFB',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#6B7280',
+  },
   header: {
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 20,
@@ -174,8 +341,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#1F2937',
   },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerButton: {
+    padding: 8,
+    marginRight: 8,
+  },
   editButton: {
     padding: 8,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  loadingButtonText: {
+    fontSize: 16,
+    color: '#F59E0B',
+    fontWeight: 'bold',
   },
   scrollView: {
     flex: 1,
@@ -248,14 +431,6 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: 16,
     color: '#1F2937',
-  },
-  storeNumberLabel: {
-    fontSize: 16,
-    color: '#6B7280',
-    fontWeight: '600',
-  },
-  storeNumberInput: {
-    backgroundColor: '#F9FAFB',
   },
   storeNumberLabel: {
     fontSize: 16,
