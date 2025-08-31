@@ -20,7 +20,6 @@ export default function OrdersScreen() {
     orders, 
     loading, 
     loadOrders, 
-    updateOrderStatus,
     store,
     setStoreInfo,
     getOrderStatusColor,
@@ -28,47 +27,10 @@ export default function OrdersScreen() {
     user
   } = useCart();
 
-  // Debug logging for store state
-  console.log('OrdersScreen - Current store state:', store);
-  
-  // Debug function to test store loading
-  const debugLoadStore = async () => {
-    try {
-      console.log('Debug: Attempting to load store info from orders screen...');
-      
-      if (user?.email) {
-        console.log('Debug: User email found:', user.email);
-        
-        // Try to get all stores and find matching one
-        try {
-          const allStores = await ApiService.getAllStores();
-          console.log('Debug: All stores from orders screen:', allStores);
-          
-          const matchingStore = allStores.find(store => 
-            store.contactDetails?.email === user.email ||
-            store.email === user.email
-          );
-          
-          if (matchingStore) {
-            console.log('Debug: Found matching store from orders screen:', matchingStore);
-            setStoreInfo(matchingStore);
-          } else {
-            console.log('Debug: No matching store found by email from orders screen');
-          }
-        } catch (error) {
-          console.log('Debug: Error fetching stores from orders screen:', error.message);
-        }
-      } else {
-        console.log('Debug: No user email available from orders screen');
-      }
-    } catch (error) {
-      console.log('Debug: Error in debug function from orders screen:', error.message);
-    }
-  };
+
 
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [updatingStatus, setUpdatingStatus] = useState(null);
 
   useEffect(() => {
     if (store?.storeNumber) {
@@ -87,17 +49,7 @@ export default function OrdersScreen() {
     }
   };
 
-  const handleStatusUpdate = async (orderNumber, newStatus) => {
-    setUpdatingStatus(orderNumber);
-    try {
-      await updateOrderStatus(orderNumber, newStatus);
-      Alert.alert('Success', `Order status updated to ${newStatus}`);
-    } catch (error) {
-      Alert.alert('Error', `Failed to update order status: ${error.message}`);
-    } finally {
-      setUpdatingStatus(null);
-    }
-  };
+
 
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
@@ -116,10 +68,7 @@ export default function OrdersScreen() {
     }
   };
 
-  const getStatusOptions = (currentStatus) => {
-    const allStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
-    return allStatuses.filter(status => status !== currentStatus);
-  };
+
 
   const renderOrderCard = (order) => (
     <TouchableOpacity
@@ -215,29 +164,7 @@ export default function OrdersScreen() {
             )}
           </View>
 
-          {/* Status Update */}
-          <View style={styles.statusUpdateSection}>
-            <Text style={styles.sectionTitle}>Update Status</Text>
-            <View style={styles.statusButtons}>
-              {getStatusOptions(order.orderStatus).map((status) => (
-                <TouchableOpacity
-                  key={status}
-                  style={[
-                    styles.statusButton,
-                    updatingStatus === order.orderNumber && styles.disabledButton
-                  ]}
-                  onPress={() => handleStatusUpdate(order.orderNumber, status)}
-                  disabled={updatingStatus === order.orderNumber}
-                >
-                  {updatingStatus === order.orderNumber ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
-                  ) : (
-                    <Text style={styles.statusButtonText}>{status}</Text>
-                  )}
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
+
 
           {/* Action Buttons */}
           <View style={styles.actionButtons}>
@@ -275,15 +202,7 @@ export default function OrdersScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       
-      {/* Debug Section - Remove this after fixing the issue */}
-      <View style={styles.debugSection}>
-        <Text style={styles.debugTitle}>Debug Info:</Text>
-        <Text style={styles.debugText}>User: {JSON.stringify(useCart().user)}</Text>
-        <Text style={styles.debugText}>Store: {JSON.stringify(store)}</Text>
-        <TouchableOpacity style={styles.debugButton} onPress={debugLoadStore}>
-          <Text style={styles.debugButtonText}>Debug Load Store</Text>
-        </TouchableOpacity>
-      </View>
+     
       
       <View style={styles.header}>
         <Text style={styles.title}>My Orders</Text>
@@ -484,33 +403,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     flex: 1,
   },
-  statusUpdateSection: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-  },
-  statusButtons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  statusButton: {
-    backgroundColor: '#F59E0B',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    minWidth: 80,
-    alignItems: 'center',
-  },
-  disabledButton: {
-    backgroundColor: '#D1D5DB',
-  },
-  statusButtonText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
-  },
+
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -581,35 +474,5 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
   },
-  debugSection: {
-    backgroundColor: '#F0F9EB', // Light green background for debug
-    padding: 15,
-    margin: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#A7D7C5',
-  },
-  debugTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#22C55E', // Green color for title
-    marginBottom: 8,
-  },
-  debugText: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 4,
-  },
-  debugButton: {
-    backgroundColor: '#22C55E',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  debugButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
+
 });

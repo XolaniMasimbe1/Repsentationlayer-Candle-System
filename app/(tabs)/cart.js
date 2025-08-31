@@ -188,18 +188,7 @@ export default function CartScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       
-      {/* Debug Section - Remove this after fixing the issue */}
-      <View style={styles.debugSection}>
-        <Text style={styles.debugTitle}>Debug Info:</Text>
-        <Text style={styles.debugText}>User: {JSON.stringify(useCart().user)}</Text>
-        <Text style={styles.debugText}>Store: {JSON.stringify(store)}</Text>
-        <TouchableOpacity style={styles.debugButton} onPress={debugLoadStore}>
-          <Text style={styles.debugButtonText}>Debug Load Store</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.debugButton, { marginTop: 8 }]} onPress={debugTestDelivery}>
-          <Text style={styles.debugButtonText}>Test Delivery Creation</Text>
-        </TouchableOpacity>
-      </View>
+     
       
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Shopping Cart</Text>
