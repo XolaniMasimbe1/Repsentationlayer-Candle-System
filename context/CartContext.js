@@ -228,7 +228,24 @@ export function CartProvider({ children }) {
   };
 
   // User management
-  // setUser is already defined as a state setter above
+  const logout = () => {
+    console.log('CartContext - Starting logout process...');
+    
+    // Clear all user-related state
+    setUser(null);
+    setStore(null);
+    setCartItems([]);
+    setOrders([]);
+    
+    console.log('CartContext - User logged out, all state cleared');
+    
+    // Force a re-render by updating state
+    setTimeout(() => {
+      console.log('CartContext - Forcing re-render after logout');
+      setUser(null);
+      setStore(null);
+    }, 50);
+  };
 
   return (
     <CartContext.Provider value={{
@@ -259,6 +276,7 @@ export function CartProvider({ children }) {
       // User state
       user,
       setUser,
+      logout,
       
       // Product management
       refreshProducts,
