@@ -10,13 +10,13 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
-import { User, Store, Settings, CreditCard, MapPin, Phone, Mail, LogOut, CreditCard as Edit, Save, Package, RefreshCw } from 'lucide-react-native';
+import { User, Store, Settings, CreditCard, Phone, Mail, LogOut, Edit, Save, Package, RefreshCw } from 'lucide-react-native';
 import { useCart } from '../../context/CartContext';
 import ApiService from '../../services/api';
 import { router } from 'expo-router';
 
 export default function ProfileScreen() {
-  const { user, store, setUser, setStoreInfo } = useCart();
+  const { user, store, setUser, setStoreInfo, logout } = useCart();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState({
@@ -140,13 +140,29 @@ export default function ProfileScreen() {
         { text: 'Cancel', style: 'cancel' },
         { 
           text: 'Logout', 
-          onPress: () => {
-            // Clear user and store data from context
-            setUser(null);
-            setStoreInfo(null);
-            // Navigate back to login screen
-            router.replace('/');
-            console.log('User logged out');
+          onPress: async () => {
+            try {
+              console.log('Starting logout process...');
+              
+              // Clear all state first
+              logout();
+              
+              // Force navigation to login screen with reset
+              console.log('Navigating to login screen...');
+              router.replace('/login');
+              
+              // Additional navigation to ensure we're at the login screen
+              setTimeout(() => {
+                console.log('Forcing navigation to login screen...');
+                router.replace('/login');
+              }, 200);
+              
+              console.log('User logged out successfully');
+            } catch (error) {
+              console.error('Error during logout:', error);
+              // Fallback: try to navigate again
+              router.replace('/login');
+            }
           }
         },
       ]

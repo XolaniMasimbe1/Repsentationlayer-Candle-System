@@ -11,7 +11,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { Package, Truck, CreditCard, FileText, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react-native';
+import { Package, Truck, CreditCard, FileText, Clock, CheckCircle, XCircle, AlertCircle, MapPin, Eye } from 'lucide-react-native';
 import { useCart } from '@/context/CartContext';
 import ApiService from '../../services/api';
 
@@ -24,7 +24,8 @@ export default function OrdersScreen() {
     store,
     setStoreInfo,
     getOrderStatusColor,
-    getOrderStatusText
+    getOrderStatusText,
+    user
   } = useCart();
 
   // Debug logging for store state
@@ -34,7 +35,6 @@ export default function OrdersScreen() {
   const debugLoadStore = async () => {
     try {
       console.log('Debug: Attempting to load store info from orders screen...');
-      const { user } = useCart();
       
       if (user?.email) {
         console.log('Debug: User email found:', user.email);
