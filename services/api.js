@@ -1,4 +1,5 @@
-const BASE_URL = 'http://192.168.240.224:8080/CandleSystem';
+const BASE_URL = 'http://192.168.240.39:8080/CandleSystem'; // ipconfig getifaddr en0
+
 
 class ApiService {
   // Authentication endpoints
@@ -451,6 +452,25 @@ class ApiService {
     }
   }
 
+  async updateStore(storeData) {
+    try {
+      const response = await fetch(`${BASE_URL}/store/update`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(storeData),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('API Error - updateStore:', error);
+      throw new Error('Failed to update store');
+    }
+  }
+
   async getAllStores() {
     try {
       const response = await fetch(`${BASE_URL}/store/all`);
@@ -488,6 +508,25 @@ class ApiService {
     } catch (error) {
       console.error('API Error - getUserByUsername:', error);
       throw new Error('Failed to fetch user');
+    }
+  }
+
+  async updateUser(userData) {
+    try {
+      const response = await fetch(`${BASE_URL}/user/update`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('API Error - updateUser:', error);
+      throw new Error('Failed to update user');
     }
   }
 
