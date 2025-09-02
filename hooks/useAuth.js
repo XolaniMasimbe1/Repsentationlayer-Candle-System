@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import ApiService from '../services/api';
+import { RetailStoreApi, AdminApi, DriverApi } from '../services';
 
 export function useAuth() {
   const [user, setUser] = useState(null);
@@ -11,17 +11,29 @@ export function useAuth() {
     setIsLoading(false);
   }, []);
 
-  const login = async (username, password) => {
+  const login = async (username, password, userType = 'store') => {
     setIsLoading(true);
     try {
-      // Call the auth API
-      const result = await ApiService.login(username, password);
+      let result;
       
-      if (result.includes('successful')) {
-        // Fetch user data after successful login
-        const userData = await ApiService.getUserByUsername(username);
-        setUser(userData);
-        return userData;
+      // Call the appropriate API based on user type
+      if (userType === 'store') {
+        result = await RetailStoreApi.login({
+          user: { username, password }
+        });
+      } else if (userType === 'admin') {
+        result = await AdminApi.login({
+          user: { username, password }
+        });
+      } else if (userType === 'driver') {
+        result = await DriverApi.login({
+          user: { username, password }
+        });
+      }
+      
+      if (result) {
+        setUser(result.user);
+        return result;
       } else {
         throw new Error('Login failed');
       }

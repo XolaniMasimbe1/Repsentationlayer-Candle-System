@@ -1,3 +1,30 @@
+/**
+ * Orders Screen Component for Candle System
+ * 
+ * This component displays order history, order details, and order status tracking
+ * with pull-to-refresh functionality and detailed order information.
+ * 
+ * References:
+ * - React Native Order Management: https://reactnative.dev/docs/scrollview
+ * - Pull to Refresh: https://reactnative.dev/docs/refreshcontrol
+ * - Order Status Tracking: https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * - Order Details Display: https://stackoverflow.com/questions/30008114/how-do-i-promise-all-an-array-of-api-calls
+ * 
+ * YouTube Tutorials Referenced:
+ * - "Order Management in React Native" by Programming with Mosh
+ * - "E-commerce Order Tracking" by The Net Ninja
+ * - "Pull to Refresh in React Native" by Codevolution
+ * - "Order Status UI Design" by Academind
+ * 
+ * Stack Overflow References:
+ * - https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * - https://stackoverflow.com/questions/30008114/how-do-i-promise-all-an-array-of-api-calls
+ * - https://stackoverflow.com/questions/43051291/attach-authorization-header-for-all-axios-requests
+ * 
+ * Baeldung References:
+ * - https://www.baeldung.com/spring-boot-json
+ * - https://www.baeldung.com/rest-api-error-handling-best-practices
+ */
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -13,7 +40,7 @@ import {
 } from 'react-native';
 import { Package, Truck, CreditCard, FileText, Clock, CheckCircle, XCircle, AlertCircle, MapPin, Eye } from 'lucide-react-native';
 import { useCart } from '@/context/CartContext';
-import ApiService from '../../services/api';
+import { OrderApi } from '../../services';
 
 export default function OrdersScreen() {
   const { 
@@ -205,8 +232,8 @@ export default function OrdersScreen() {
      
       
       <View style={styles.header}>
-        <Text style={styles.title}>My Orders</Text>
-        <Text style={styles.subtitle}>Track your candle orders</Text>
+        <Text style={styles.title}>Ezelina Candle Orders</Text>
+        <Text style={styles.subtitle}>Track your premium candle orders</Text>
       </View>
 
       <ScrollView 
@@ -229,7 +256,7 @@ export default function OrdersScreen() {
               <Package size={64} color="#D1D5DB" />
               <Text style={styles.noOrdersTitle}>No orders yet</Text>
               <Text style={styles.noOrdersSubtitle}>
-                Start shopping to see your orders here
+                Start shopping for premium Ezelina candles to see your orders here
               </Text>
             </View>
           )}

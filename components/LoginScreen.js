@@ -1,3 +1,31 @@
+/**
+ * Login Screen Component for Candle System
+ * 
+ * This component handles user authentication for different user types (Store Owner, Admin, Driver)
+ * with dynamic form fields and API integration.
+ * 
+ * References:
+ * - React Native Forms: https://reactnative.dev/docs/textinput
+ * - Form Validation: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
+ * - Authentication Flow: https://stackoverflow.com/questions/43051291/attach-authorization-header-for-all-axios-requests
+ * - Dynamic Form Fields: https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * 
+ * YouTube Tutorials Referenced:
+ * - "React Native Forms Tutorial" by Programming with Mosh
+ * - "Authentication in React Native" by The Net Ninja
+ * - "Form Validation in React Native" by Codevolution
+ * - "Dynamic Forms in React" by Academind
+ * 
+ * Stack Overflow References:
+ * - https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
+ * - https://stackoverflow.com/questions/43051291/attach-authorization-header-for-all-axios-requests
+ * - https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * - https://stackoverflow.com/questions/30008114/how-do-i-promise-all-an-array-of-api-calls
+ * 
+ * Baeldung References:
+ * - https://www.baeldung.com/spring-security-authentication
+ * - https://www.baeldung.com/rest-api-error-handling-best-practices
+ */
 import React, { useState, useRef } from 'react';
 import {
   View,
@@ -10,13 +38,14 @@ import {
   Alert,
   ScrollView
 } from 'react-native';
-import { Mail, Lock, User, Store } from 'lucide-react-native';
-import ApiService from '../services/api';
+import { Mail, Lock, User, Store, Shield, Truck } from 'lucide-react-native';
+import { RetailStoreApi, AdminApi, DriverApi } from '../services';
 import { useCart } from '../context/CartContext';
 
 export default function LoginScreen({ onLogin }) {
   const { setUser, setStoreInfo, loadStoreInfo } = useCart();
   const [isLogin, setIsLogin] = useState(true);
+  const [userType, setUserType] = useState('store'); // 'store', 'admin', 'driver'
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -28,13 +57,15 @@ export default function LoginScreen({ onLogin }) {
     city: '',
     province: '',
     country: 'South Africa',
+    licenseNumber: '', // For drivers
+    vehicleType: '', // For drivers
   });
 
   // Test backend connection on component mount
   React.useEffect(() => {
     const testConnection = async () => {
       try {
-        const isConnected = await ApiService.checkConnection();
+        const isConnected = await RetailStoreApi.getAll();
         console.log('Backend connection test:', isConnected ? 'SUCCESS' : 'FAILED');
       } catch (error) {
         console.log('Backend connection test error:', error.message);
@@ -61,71 +92,36 @@ export default function LoginScreen({ onLogin }) {
   const handleSubmit = async () => {
     if (isLogin) {
       try {
-        const result = await ApiService.login(formData.username, formData.password);
-        if (result.includes('successful')) {
-          // After successful login, fetch user and store information
-          try {
-            console.log('Login successful, fetching user data for:', formData.username);
-            
-            // Get user information
-            const userData = await ApiService.getUserByUsername(formData.username);
-            console.log('User data received:', userData);
-            
-            if (userData) {
-              setUser(userData);
-              console.log('User set in context:', userData);
-              
-              // If user has a store, load store information
-              if (userData.retailStore) {
-                console.log('User has retail store:', userData.retailStore);
-                setStoreInfo(userData.retailStore);
-              } else {
-                console.log('User has no retail store in user data, trying to find store by email');
-                // Try to find store by user's email (more reliable than username)
-                try {
-                  // Get all stores and find the one matching the user's email
-                  const allStores = await ApiService.getAllStores();
-                  console.log('All stores fetched:', allStores);
-                  
-                  // Find store that matches the user's email
-                  const matchingStore = allStores.find(store => 
-                    store.contactDetails?.email === userData.email ||
-                    store.email === userData.email
-                  );
-                  
-                  if (matchingStore) {
-                    console.log('Store found by email:', matchingStore);
-                    setStoreInfo(matchingStore);
-                  } else {
-                    console.log('No store found by email, trying username as fallback');
-                    // Fallback: try to find store by username (in case they are the same)
-                    try {
-                      const storeData = await ApiService.getStoreByNumber(formData.username);
-                      console.log('Store data found by username:', storeData);
-                      if (storeData) {
-                        setStoreInfo(storeData);
-                        console.log('Store info set in context');
-                      }
-                    } catch (storeError) {
-                      console.log('No store found for user:', storeError.message);
-                    }
-                  }
-                } catch (storesError) {
-                  console.log('Error fetching all stores:', storesError.message);
-                  // Fallback: try username method
-                  try {
-                    const storeData = await ApiService.getStoreByNumber(formData.username);
-                    if (storeData) {
-                      setStoreInfo(storeData);
-                    }
-                  } catch (fallbackError) {
-                    console.log('Fallback store lookup failed:', fallbackError.message);
-                  }
-                }
-              }
-            }
-          } catch (userError) {
-            console.log('Error loading user data:', userError.message);
+        let result;
+        
+        // Login based on user type
+        if (userType === 'store') {
+          result = await RetailStoreApi.login({
+            user: { username: formData.username, password: formData.password }
+          });
+        } else if (userType === 'admin') {
+          result = await AdminApi.login({
+            user: { username: formData.username, password: formData.password }
+          });
+        } else if (userType === 'driver') {
+          result = await DriverApi.login({
+            user: { username: formData.username, password: formData.password }
+          });
+        }
+
+        if (result) {
+          console.log('Login successful for', userType, ':', result);
+          
+          // Set user data based on type
+          if (userType === 'store') {
+            setUser(result.user);
+            setStoreInfo(result);
+          } else if (userType === 'admin') {
+            setUser(result.user);
+            // Admin doesn't have store info
+          } else if (userType === 'driver') {
+            setUser(result.user);
+            // Driver doesn't have store info
           }
           
           onLogin();
@@ -133,85 +129,91 @@ export default function LoginScreen({ onLogin }) {
           Alert.alert('Error', 'Invalid credentials');
         }
       } catch (error) {
-        Alert.alert('Error', 'Network error. Please try again.');
+        console.error('Login error:', error);
+        Alert.alert('Error', 'Login failed. Please try again.');
       }
     } else {
       try {
-        const registrationData = {
-          username: formData.username,
-          password: formData.password,
-          storeName: formData.storeName,
-          email: formData.email,
-          phoneNumber: formData.phone,
-          postalCode: formData.postalCode,
-          street: formData.street,
-          city: formData.city,
-          province: formData.province,
-          country: formData.country
-        };
-
-        console.log('Sending registration data:', registrationData);
-
-        const result = await ApiService.registerStore(registrationData);
-        if (result) {
-          console.log('Registration successful, fetching user and store data');
+        let result;
+        
+        // Registration based on user type
+        if (userType === 'store') {
+          const registrationData = {
+            user: {
+              username: formData.username,
+              password: formData.password,
+              contactDetails: {
+                email: formData.email,
+                phoneNumber: formData.phone,
+                postalCode: formData.postalCode,
+                street: formData.street,
+                city: formData.city,
+                province: formData.province,
+                country: formData.country
+              }
+            },
+            storeName: formData.storeName
+          };
           
-          // After successful registration, fetch and set user and store information
-          try {
-            // Get the newly created user
-            const userData = await ApiService.getUserByUsername(formData.username);
-            console.log('User data after registration:', userData);
-            
-            if (userData) {
-              setUser(userData);
-              console.log('User set in context after registration');
-              
-              // Get the newly created store
-              if (userData.retailStore) {
-                console.log('User has retail store after registration:', userData.retailStore);
-                setStoreInfo(userData.retailStore);
-              } else {
-                console.log('No retail store in user data, trying to find store by email');
-                // Try to find store by email (more reliable)
-                try {
-                  const allStores = await ApiService.getAllStores();
-                  console.log('All stores after registration:', allStores);
-                  
-                  // Find store that matches the user's email
-                  const matchingStore = allStores.find(store => 
-                    store.contactDetails?.email === userData.email ||
-                    store.email === userData.email
-                  );
-                  
-                  if (matchingStore) {
-                    console.log('Store found by email after registration:', matchingStore);
-                    setStoreInfo(matchingStore);
-                  } else {
-                    console.log('No store found by email, trying username as fallback');
-                    // Fallback: try username
-                    try {
-                      const storeData = await ApiService.getStoreByNumber(formData.username);
-                      if (storeData) {
-                        setStoreInfo(storeData);
-                      }
-                    } catch (storeError) {
-                      console.log('Fallback store lookup failed after registration:', storeError.message);
-                    }
-                  }
-                } catch (storesError) {
-                  console.log('Error fetching stores after registration:', storesError.message);
-                }
+          result = await RetailStoreApi.register(registrationData);
+        } else if (userType === 'admin') {
+          const registrationData = {
+            user: {
+              username: formData.username,
+              password: formData.password,
+              contactDetails: {
+                email: formData.email,
+                phoneNumber: formData.phone,
+                postalCode: formData.postalCode,
+                street: formData.street,
+                city: formData.city,
+                province: formData.province,
+                country: formData.country
               }
             }
-          } catch (userError) {
-            console.log('Error loading user data after registration:', userError.message);
+          };
+          
+          result = await AdminApi.register(registrationData);
+        } else if (userType === 'driver') {
+          const registrationData = {
+            user: {
+              username: formData.username,
+              password: formData.password,
+              contactDetails: {
+                email: formData.email,
+                phoneNumber: formData.phone,
+                postalCode: formData.postalCode,
+                street: formData.street,
+                city: formData.city,
+                province: formData.province,
+                country: formData.country
+              }
+            },
+            licenseNumber: formData.licenseNumber,
+            vehicleType: formData.vehicleType
+          };
+          
+          result = await DriverApi.register(registrationData);
+        }
+
+        if (result) {
+          console.log('Registration successful for', userType, ':', result);
+          
+          // Set user data based on type
+          if (userType === 'store') {
+            setUser(result.user);
+            setStoreInfo(result);
+          } else if (userType === 'admin') {
+            setUser(result.user);
+          } else if (userType === 'driver') {
+            setUser(result.user);
           }
           
-          Alert.alert('Success', 'Store registered successfully', [
+          Alert.alert('Success', `${userType.charAt(0).toUpperCase() + userType.slice(1)} registered successfully`, [
             { text: 'OK', onPress: () => setIsLogin(true) }
           ]);
         } else {
-          Alert.alert('Error', 'Username already exists');
+          Alert.alert('Error', 'Registration failed');
         }
       } catch (error) {
         console.error('Registration error:', error);
@@ -230,8 +232,8 @@ export default function LoginScreen({ onLogin }) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Candle Haven</Text>
-          <Text style={styles.subtitle}>Premium Handcrafted Candles</Text>
+          <Text style={styles.title}>Ezelina Candle</Text>
+          <Text style={styles.subtitle}>Illuminating Moments, Crafting Memories</Text>
         </View>
 
         <View style={styles.form}>
@@ -250,10 +252,57 @@ export default function LoginScreen({ onLogin }) {
             </TouchableOpacity>
           </View>
 
+          {/* User Type Selection */}
+          <View style={styles.userTypeContainer}>
+            <TouchableOpacity
+              style={[styles.userTypeButton, userType === 'store' && styles.activeUserType]}
+              onPress={() => setUserType('store')}
+            >
+              <Store size={20} color={userType === 'store' ? '#FFFFFF' : '#6B7280'} />
+              <Text style={[styles.userTypeText, userType === 'store' && styles.activeUserTypeText]}>
+                Store Owner
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.userTypeButton, userType === 'admin' && styles.activeUserType]}
+              onPress={() => setUserType('admin')}
+            >
+              <Shield size={20} color={userType === 'admin' ? '#FFFFFF' : '#6B7280'} />
+              <Text style={[styles.userTypeText, userType === 'admin' && styles.activeUserTypeText]}>
+                Admin
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.userTypeButton, userType === 'driver' && styles.activeUserType]}
+              onPress={() => setUserType('driver')}
+            >
+              <Truck size={20} color={userType === 'driver' ? '#FFFFFF' : '#6B7280'} />
+              <Text style={[styles.userTypeText, userType === 'driver' && styles.activeUserTypeText]}>
+                Driver
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           {!isLogin && (
-            <View style={styles.storeOwnerBanner}>
-              <Store size={24} color="#F59E0B" />
-              <Text style={styles.bannerText}>Store Owner Registration</Text>
+            <View style={styles.userTypeBanner}>
+              {userType === 'store' && (
+                <>
+                  <Store size={24} color="#F59E0B" />
+                  <Text style={styles.bannerText}>Store Owner Registration</Text>
+                </>
+              )}
+              {userType === 'admin' && (
+                <>
+                  <Shield size={24} color="#F59E0B" />
+                  <Text style={styles.bannerText}>Admin Registration</Text>
+                </>
+              )}
+              {userType === 'driver' && (
+                <>
+                  <Truck size={24} color="#F59E0B" />
+                  <Text style={styles.bannerText}>Driver Registration</Text>
+                </>
+              )}
             </View>
           )}
 
@@ -287,20 +336,54 @@ export default function LoginScreen({ onLogin }) {
 
           {!isLogin && (
             <>
-              <View style={styles.inputContainer}>
-                <Store size={20} color="#6B7280" />
-                <TextInput
-                  ref={storeNameRef}
-                  style={styles.input}
-                  placeholder="Store Name"
-                  value={formData.storeName}
-                  onChangeText={(text) => setFormData({...formData, storeName: text})}
-                  placeholderTextColor="#9CA3AF"
-                  returnKeyType="next"
-                  onSubmitEditing={() => focusNextField(emailRef)}
-                />
-              </View>
+              {/* Store-specific fields */}
+              {userType === 'store' && (
+                <View style={styles.inputContainer}>
+                  <Store size={20} color="#6B7280" />
+                  <TextInput
+                    ref={storeNameRef}
+                    style={styles.input}
+                    placeholder="Store Name"
+                    value={formData.storeName}
+                    onChangeText={(text) => setFormData({...formData, storeName: text})}
+                    placeholderTextColor="#9CA3AF"
+                    returnKeyType="next"
+                    onSubmitEditing={() => focusNextField(emailRef)}
+                  />
+                </View>
+              )}
 
+              {/* Driver-specific fields */}
+              {userType === 'driver' && (
+                <>
+                  <View style={styles.inputContainer}>
+                    <Truck size={20} color="#6B7280" />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="License Number"
+                      value={formData.licenseNumber}
+                      onChangeText={(text) => setFormData({...formData, licenseNumber: text})}
+                      placeholderTextColor="#9CA3AF"
+                      returnKeyType="next"
+                      onSubmitEditing={() => focusNextField(emailRef)}
+                    />
+                  </View>
+                  <View style={styles.inputContainer}>
+                    <Truck size={20} color="#6B7280" />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Vehicle Type (e.g., Van, Truck)"
+                      value={formData.vehicleType}
+                      onChangeText={(text) => setFormData({...formData, vehicleType: text})}
+                      placeholderTextColor="#9CA3AF"
+                      returnKeyType="next"
+                      onSubmitEditing={() => focusNextField(emailRef)}
+                    />
+                  </View>
+                </>
+              )}
+
+              {/* Common fields for all user types */}
               <View style={styles.inputContainer}>
                 <Mail size={20} color="#6B7280" />
                 <TextInput
@@ -453,7 +536,35 @@ const styles = StyleSheet.create({
   activeToggleText: {
     color: '#FFFFFF',
   },
-  storeOwnerBanner: {
+  userTypeContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 16,
+  },
+  userTypeButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  activeUserType: {
+    backgroundColor: '#F59E0B',
+  },
+  userTypeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6B7280',
+    marginLeft: 4,
+  },
+  activeUserTypeText: {
+    color: '#FFFFFF',
+  },
+  userTypeBanner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

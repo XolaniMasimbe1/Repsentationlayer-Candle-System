@@ -26,7 +26,7 @@ import {
   Zap,
   Ruler
 } from 'lucide-react-native';
-import ApiService from '../services/api';
+import { ProductApi, ManufactureApi } from '../services';
 
 export default function ProductManagement() {
   const [products, setProducts] = useState([]);
@@ -53,8 +53,8 @@ export default function ProductManagement() {
     try {
       setLoading(true);
       const [productsData, manufacturersData] = await Promise.all([
-        ApiService.getAllProducts(),
-        ApiService.getAllManufactures()
+        ProductApi.getAll(),
+        ManufactureApi.getAll()
       ]);
       setProducts(productsData);
       setManufacturers(manufacturersData);
@@ -89,7 +89,7 @@ export default function ProductManagement() {
         manufacturer: manufacturer
       };
 
-      const newProduct = await ApiService.createProduct(productData);
+      const newProduct = await ProductApi.create(productData);
       setProducts(prev => [...prev, newProduct]);
       setShowAddModal(false);
       resetForm();
@@ -123,7 +123,7 @@ export default function ProductManagement() {
         manufacturer: manufacturer
       };
 
-      const result = await ApiService.updateProduct(updatedProduct);
+      const result = await ProductApi.update(updatedProduct);
       setProducts(prev => prev.map(p => p.productNumber === editingProduct.productNumber ? result : p));
       setEditingProduct(null);
       setShowAddModal(false);

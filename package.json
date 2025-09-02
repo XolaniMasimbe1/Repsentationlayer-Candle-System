@@ -1,9 +1,9 @@
 {
-  "name": "bolt-expo-starter",
+  "name": "ezelina-candle",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "private": true,
-  "author": "<plum@plum.systems>",
+  "author": "Ezelina Candle Team",
   "license": "MIT",
   "scripts": {
     "start": "expo start",

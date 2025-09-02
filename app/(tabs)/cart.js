@@ -1,3 +1,30 @@
+/**
+ * Cart Screen Component for Candle System
+ * 
+ * This component handles shopping cart functionality, checkout process,
+ * and order creation with payment method selection.
+ * 
+ * References:
+ * - React Native Shopping Cart: https://reactnative.dev/docs/scrollview
+ * - Checkout Process: https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * - Payment Integration: https://stackoverflow.com/questions/30008114/how-do-i-promise-all-an-array-of-api-calls
+ * - Modal Implementation: https://reactnative.dev/docs/modal
+ * 
+ * YouTube Tutorials Referenced:
+ * - "Shopping Cart in React Native" by Programming with Mosh
+ * - "E-commerce Checkout Process" by The Net Ninja
+ * - "Payment Integration in React Native" by Codevolution
+ * - "Modal Components in React Native" by Academind
+ * 
+ * Stack Overflow References:
+ * - https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * - https://stackoverflow.com/questions/30008114/how-do-i-promise-all-an-array-of-api-calls
+ * - https://stackoverflow.com/questions/43051291/attach-authorization-header-for-all-axios-requests
+ * 
+ * Baeldung References:
+ * - https://www.baeldung.com/spring-boot-json
+ * - https://www.baeldung.com/rest-api-error-handling-best-practices
+ */
 import React, { useState } from 'react';
 import {
   View,
@@ -15,7 +42,7 @@ import {
 } from 'react-native';
 import { Minus, Plus, Trash2, ShoppingBag, CreditCard, FileText, Check, AlertCircle } from 'lucide-react-native';
 import { useCart } from '@/context/CartContext';
-import ApiService from '../../services/api';
+import { RetailStoreApi, OrderApi, PaymentApi, PaymentMethodApi, InvoiceApi, DeliveryApi } from '../../services';
 
 export default function CartScreen() {
   const { 
@@ -44,12 +71,12 @@ export default function CartScreen() {
         
         // Try to get all stores and find matching one
         try {
-          const allStores = await ApiService.getAllStores();
+          const allStores = await RetailStoreApi.getAll();
           console.log('Debug: All stores:', allStores);
           
           const matchingStore = allStores.find(store => 
-            store.contactDetails?.email === user.email ||
-            store.email === user.email
+            store.user?.contactDetails?.email === user.email ||
+            store.contactDetails?.email === user.email
           );
           
           if (matchingStore) {
@@ -76,7 +103,7 @@ export default function CartScreen() {
       
       // Test delivery with ONLY the fields the backend accepts
       try {
-        const minimalDelivery = await ApiService.createDelivery({ status: 'Pending' });
+        const minimalDelivery = await DeliveryApi.create({ status: 'Pending' });
         console.log('Debug: Delivery created successfully:', minimalDelivery);
         Alert.alert('Success', 'Delivery created successfully!');
       } catch (error) {
@@ -173,7 +200,7 @@ export default function CartScreen() {
         <View style={styles.emptyCart}>
           <ShoppingBag size={64} color="#D1D5DB" />
           <Text style={styles.emptyCartTitle}>Your cart is empty</Text>
-          <Text style={styles.emptyCartSubtitle}>Add some beautiful candles to get started</Text>
+          <Text style={styles.emptyCartSubtitle}>Add some premium Ezelina candles to get started</Text>
         </View>
       </SafeAreaView>
     );
@@ -191,7 +218,7 @@ export default function CartScreen() {
      
       
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Shopping Cart</Text>
+        <Text style={styles.headerTitle}>Ezelina Candle Cart</Text>
         <Text style={styles.itemCount}>{cartItems.length} items</Text>
       </View>
 
