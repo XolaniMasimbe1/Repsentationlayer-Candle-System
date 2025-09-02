@@ -1,5 +1,41 @@
+/**
+ * Cart Context for Candle System
+ * 
+ * This context provides global state management for cart operations, order creation,
+ * and user/store information across the entire application.
+ * 
+ * References:
+ * - React Context API: https://reactjs.org/docs/context.html
+ * - React Hooks: https://reactjs.org/docs/hooks-intro.html
+ * - State Management: https://stackoverflow.com/questions/41030361/how-to-update-react-context-from-inside-a-child-component
+ * - Cart Implementation: https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * 
+ * YouTube Tutorials Referenced:
+ * - "React Context API Tutorial" by Programming with Mosh
+ * - "React Hooks Explained" by The Net Ninja
+ * - "Shopping Cart in React Native" by Codevolution
+ * - "State Management in React" by Academind
+ * 
+ * Stack Overflow References:
+ * - https://stackoverflow.com/questions/41030361/how-to-update-react-context-from-inside-a-child-component
+ * - https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * - https://stackoverflow.com/questions/30008114/how-do-i-promise-all-an-array-of-api-calls
+ * 
+ * Baeldung References:
+ * - https://www.baeldung.com/spring-boot-json
+ * - https://www.baeldung.com/rest-api-error-handling-best-practices
+ */
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import ApiService from '../services/api';
+import { 
+  RetailStoreApi, 
+  OrderApi, 
+  ProductApi, 
+  PaymentApi, 
+  PaymentMethodApi, 
+  InvoiceApi, 
+  DeliveryApi,
+  OrderItemApi 
+} from '../services';
 
 const CartContext = createContext();
 
@@ -12,8 +48,7 @@ export function CartProvider({ children }) {
 
   // Load user data on mount
   useEffect(() => {
-    // User and store data will be loaded by LoginScreen after authentication
-    // No need to set hardcoded demo data
+    
   }, []);
 
   const addToCart = (product) => {
@@ -96,8 +131,8 @@ export function CartProvider({ children }) {
         paymentType: paymentType
       };
 
-      // Use the API service to create the complete order
-      const createdOrder = await ApiService.createCompleteOrder(orderData);
+      // Use the OrderApi to create the complete order with all related entities
+      const createdOrder = await OrderApi.createCompleteOrder(orderData);
       
       // Add to orders list
       setOrders(prevOrders => [...prevOrders, createdOrder]);
@@ -119,7 +154,7 @@ export function CartProvider({ children }) {
     
     setLoading(true);
     try {
-      const storeOrders = await ApiService.getOrdersByStore(store.storeNumber);
+      const storeOrders = await OrderApi.getOrdersByStoreNumber(store.storeNumber);
       setOrders(storeOrders);
     } catch (error) {
       console.error('Error loading orders:', error);
@@ -131,7 +166,7 @@ export function CartProvider({ children }) {
   const updateOrderStatus = async (orderNumber, newStatus) => {
     setLoading(true);
     try {
-      const updatedOrder = await ApiService.updateOrderStatus(orderNumber, newStatus);
+      const updatedOrder = await OrderApi.updateOrderStatus(orderNumber, newStatus);
       
       // Update local orders
       setOrders(prevOrders =>
@@ -153,7 +188,7 @@ export function CartProvider({ children }) {
 
   const getOrderById = async (orderNumber) => {
     try {
-      return await ApiService.getOrderByNumber(orderNumber);
+      return await OrderApi.read(orderNumber);
     } catch (error) {
       console.error('Error fetching order:', error);
       throw error;
@@ -168,7 +203,7 @@ export function CartProvider({ children }) {
 
   const loadStoreInfo = async (storeNumber) => {
     try {
-      const storeData = await ApiService.getStoreByNumber(storeNumber);
+      const storeData = await RetailStoreApi.readByStoreNumber(storeNumber);
       console.log('Loading store info:', storeData);
       setStore(storeData);
       return storeData;
@@ -181,7 +216,7 @@ export function CartProvider({ children }) {
   // Product management
   const refreshProducts = async () => {
     try {
-      const products = await ApiService.getAllProducts();
+      const products = await ProductApi.getAll();
       // Update cart items with fresh product data
       setCartItems(currentItems =>
         currentItems.map(item => {

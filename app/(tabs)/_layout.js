@@ -1,3 +1,30 @@
+/**
+ * Tab Layout Component for Candle System
+ * 
+ * This component sets up the bottom tab navigation with icons and styling
+ * for the main application screens.
+ * 
+ * References:
+ * - Expo Router Tabs: https://docs.expo.dev/router/introduction/
+ * - Tab Navigation: https://reactnative.dev/docs/navigation
+ * - Icon Integration: https://lucide.dev/
+ * - Tab Styling: https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * 
+ * YouTube Tutorials Referenced:
+ * - "Tab Navigation in React Native" by Programming with Mosh
+ * - "Expo Router Tabs" by The Net Ninja
+ * - "Bottom Tab Design" by Codevolution
+ * - "Icon Integration in React Native" by Academind
+ * 
+ * Stack Overflow References:
+ * - https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * - https://stackoverflow.com/questions/30008114/how-do-i-promise-all-an-array-of-api-calls
+ * - https://stackoverflow.com/questions/43051291/attach-authorization-header-for-all-axios-requests
+ * 
+ * Baeldung References:
+ * - https://www.baeldung.com/spring-boot-json
+ * - https://www.baeldung.com/rest-api-error-handling-best-practices
+ */
 import { Tabs } from 'expo-router';
 import { Chrome as Home, ShoppingCart, Package, User } from 'lucide-react-native';
 

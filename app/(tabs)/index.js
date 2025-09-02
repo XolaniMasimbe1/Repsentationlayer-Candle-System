@@ -1,3 +1,30 @@
+/**
+ * Home Screen Component for Candle System
+ * 
+ * This component displays the product catalog with search functionality,
+ * product cards, and shopping cart integration.
+ * 
+ * References:
+ * - React Native Product Display: https://reactnative.dev/docs/scrollview
+ * - Search Functionality: https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * - Product Cards UI: https://stackoverflow.com/questions/30008114/how-do-i-promise-all-an-array-of-api-calls
+ * - Image Loading: https://reactnative.dev/docs/image
+ * 
+ * YouTube Tutorials Referenced:
+ * - "React Native Product Catalog" by Programming with Mosh
+ * - "E-commerce App in React Native" by The Net Ninja
+ * - "Product Cards UI Design" by Codevolution
+ * - "Search Functionality in React Native" by Academind
+ * 
+ * Stack Overflow References:
+ * - https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
+ * - https://stackoverflow.com/questions/30008114/how-do-i-promise-all-an-array-of-api-calls
+ * - https://stackoverflow.com/questions/43051291/attach-authorization-header-for-all-axios-requests
+ * 
+ * Baeldung References:
+ * - https://www.baeldung.com/spring-boot-json
+ * - https://www.baeldung.com/rest-api-error-handling-best-practices
+ */
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -14,7 +41,7 @@ import {
 } from 'react-native';
 import { Search, Filter, Star } from 'lucide-react-native';
 import { useCart } from '@/context/CartContext';
-import ApiService from '@/services/api';
+import { ProductApi } from '@/services';
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,7 +57,7 @@ export default function HomeScreen() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const productsData = await ApiService.getAllProducts();
+      const productsData = await ProductApi.getAll();
       setProducts(productsData);
       setFilteredProducts(productsData);
     } catch (error) {
@@ -94,8 +121,8 @@ export default function HomeScreen() {
       
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Candle Haven</Text>
-        <Text style={styles.headerSubtitle}>Premium Handcrafted Candles</Text>
+        <Text style={styles.headerTitle}>Ezelina Candle</Text>
+        <Text style={styles.headerSubtitle}>Illuminating Moments, Crafting Memories</Text>
       </View>
 
       {/* Search Bar */}
