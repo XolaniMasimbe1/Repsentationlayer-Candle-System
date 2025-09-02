@@ -22,7 +22,7 @@
  * - https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout
  * 
  * Baeldung References:
- * - https://www.baeldung.com/spring-security-authentication
+ * - https://www.baeldung.com/spring-security-login
  * - https://www.baeldung.com/rest-api-error-handling-best-practices
  */
 import API_CONFIG from './config';

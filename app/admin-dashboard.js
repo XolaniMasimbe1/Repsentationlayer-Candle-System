@@ -37,41 +37,59 @@ import {
   Alert,
 } from 'react-native';
 import { 
-  Users, 
   Package, 
-  ShoppingCart, 
-  Truck, 
-  BarChart3, 
-  Settings, 
   LogOut,
-  Plus,
-  Eye,
-  Edit,
-  Trash2
+  Factory
 } from 'lucide-react-native';
 import { useCart } from '../context/CartContext';
 import { router } from 'expo-router';
+import ProductManagement from '../components/ProductManagement';
+import ManufactureManagement from '../components/ManufactureManagement';
+import { ProductApi, ManufactureApi } from '../services';
 
 export default function AdminDashboard() {
   const { user, logout } = useCart();
+  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard', 'products', 'manufacturers'
   const [stats, setStats] = useState({
-    totalStores: 0,
-    totalOrders: 0,
     totalProducts: 0,
-    totalDrivers: 0
+    totalManufacturers: 0
   });
 
   useEffect(() => {
     loadDashboardStats();
   }, []);
 
+  // Refresh stats when returning to dashboard
+  useEffect(() => {
+    if (currentView === 'dashboard') {
+      loadDashboardStats();
+    }
+  }, [currentView]);
+
   const loadDashboardStats = async () => {
-    setStats({
-      totalStores: 12,
-      totalOrders: 156,
-      totalProducts: 89,
-      totalDrivers: 8
-    });
+    try {
+      console.log('Loading dashboard stats...');
+      
+      const [products, manufacturers] = await Promise.all([
+        ProductApi.getAll(),
+        ManufactureApi.getAll()
+      ]);
+
+      console.log('Products loaded:', products.length);
+      console.log('Manufacturers loaded:', manufacturers.length);
+
+      setStats({
+        totalProducts: products.length,
+        totalManufacturers: manufacturers.length
+      });
+    } catch (error) {
+      console.error('Error loading dashboard stats:', error);
+      // Set default values if API fails
+      setStats({
+        totalProducts: 0,
+        totalManufacturers: 0
+      });
+    }
   };
 
   const handleLogout = () => {
@@ -113,6 +131,63 @@ export default function AdminDashboard() {
     </TouchableOpacity>
   );
 
+  const renderDashboard = () => (
+    <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      {/* Statistics Overview */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>System Overview</Text>
+        <View style={styles.statsGrid}>
+          <StatCard
+            title="Total Products"
+            value={stats.totalProducts}
+            icon={Package}
+            color="#F59E0B"
+            onPress={() => setCurrentView('products')}
+          />
+          <StatCard
+            title="Manufacturers"
+            value={stats.totalManufacturers}
+            icon={Factory}
+            color="#8B5CF6"
+            onPress={() => setCurrentView('manufacturers')}
+          />
+        </View>
+      </View>
+
+      {/* Quick Actions */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <View style={styles.actionsGrid}>
+          <ActionButton
+            title="Manage Products"
+            icon={Package}
+            color="#F59E0B"
+            onPress={() => setCurrentView('products')}
+          />
+          <ActionButton
+            title="Manage Manufacturers"
+            icon={Factory}
+            color="#8B5CF6"
+            onPress={() => setCurrentView('manufacturers')}
+          />
+        </View>
+      </View>
+
+      <View style={styles.bottomPadding} />
+    </ScrollView>
+  );
+
+  const renderCurrentView = () => {
+    switch (currentView) {
+      case 'products':
+        return <ProductManagement />;
+      case 'manufacturers':
+        return <ManufactureManagement />;
+      default:
+        return renderDashboard();
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -120,16 +195,34 @@ export default function AdminDashboard() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.headerTitle}>Ezelina Candle - Admin</Text>
-          <Text style={styles.headerSubtitle}>Welcome back, {user?.username || 'Admin'}</Text>
+          <Text style={styles.headerTitle}>
+            {currentView === 'products' ? 'Product Management' :
+             currentView === 'manufacturers' ? 'Manufacturer Management' :
+             'Ezelina Candle - Admin'}
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            {currentView === 'dashboard' ? `Welcome back, ${user?.username || 'Admin'}` :
+             currentView === 'products' ? 'Manage your product catalog' :
+             currentView === 'manufacturers' ? 'Manage manufacturer information' :
+             'Admin Dashboard'}
+          </Text>
         </View>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <LogOut size={20} color="#EF4444" />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          {currentView !== 'dashboard' && (
+            <TouchableOpacity 
+              style={styles.backButton} 
+              onPress={() => setCurrentView('dashboard')}
+            >
+              <Text style={styles.backButtonText}>← Back</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <LogOut size={20} color="#EF4444" />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-      </ScrollView>
+      {renderCurrentView()}
     </SafeAreaView>
   );
 }
@@ -152,6 +245,22 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     flex: 1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  backButton: {
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  backButtonText: {
+    color: '#374151',
+    fontSize: 14,
+    fontWeight: '500',
   },
   headerTitle: {
     fontSize: 24,
@@ -244,48 +353,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginLeft: 8,
   },
-  activityCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  activityItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  activityIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#F3F4F6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1F2937',
-  },
-  activitySubtitle: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginTop: 2,
-  },
-  activityTime: {
-    fontSize: 11,
-    color: '#9CA3AF',
-    marginTop: 2,
-  },
+
   managementCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
