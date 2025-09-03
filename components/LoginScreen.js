@@ -39,13 +39,13 @@ import {
   ScrollView
 } from 'react-native';
 import { Mail, Lock, User, Store, Shield, Truck } from 'lucide-react-native';
-import { RetailStoreApi, AdminApi, DriverApi } from '../services';
+import { RetailStoreApi, AdminApi /*, DriverApi - TEMPORARILY DISABLED */ } from '../services';
 import { useCart } from '../context/CartContext';
 
 export default function LoginScreen({ onLogin }) {
   const { setUser, setStoreInfo, loadStoreInfo } = useCart();
   const [isLogin, setIsLogin] = useState(true);
-  const [userType, setUserType] = useState('store'); // 'store', 'admin', 'driver'
+  const [userType, setUserType] = useState('store'); // 'store', 'admin' // 'driver' - TEMPORARILY DISABLED
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -57,8 +57,8 @@ export default function LoginScreen({ onLogin }) {
     city: '',
     province: '',
     country: 'South Africa',
-    licenseNumber: '', // For drivers
-    vehicleType: '', // For drivers
+    // licenseNumber: '', // For drivers - TEMPORARILY DISABLED
+    // vehicleType: '', // For drivers - TEMPORARILY DISABLED
   });
 
   // Test backend connection on component mount
@@ -103,11 +103,13 @@ export default function LoginScreen({ onLogin }) {
           result = await AdminApi.login({
             user: { username: formData.username, password: formData.password }
           });
-        } else if (userType === 'driver') {
-          result = await DriverApi.login({
-            user: { username: formData.username, password: formData.password }
-          });
         }
+        // DRIVER FUNCTIONALITY TEMPORARILY DISABLED
+        // } else if (userType === 'driver') {
+        //   result = await DriverApi.login({
+        //     user: { username: formData.username, password: formData.password }
+        //   });
+        // }
 
         if (result) {
           console.log('Login successful for', userType, ':', result);
@@ -119,10 +121,12 @@ export default function LoginScreen({ onLogin }) {
           } else if (userType === 'admin') {
             setUser(result.user);
             // Admin doesn't have store info
-          } else if (userType === 'driver') {
-            setUser(result.user);
-            // Driver doesn't have store info
           }
+          // DRIVER FUNCTIONALITY TEMPORARILY DISABLED
+          // } else if (userType === 'driver') {
+          //   setUser(result.user);
+          //   // Driver doesn't have store info
+          // }
           
           onLogin();
         } else {
@@ -174,27 +178,29 @@ export default function LoginScreen({ onLogin }) {
           };
           
           result = await AdminApi.register(registrationData);
-        } else if (userType === 'driver') {
-          const registrationData = {
-            user: {
-              username: formData.username,
-              password: formData.password,
-              contactDetails: {
-                email: formData.email,
-                phoneNumber: formData.phone,
-                postalCode: formData.postalCode,
-                street: formData.street,
-                city: formData.city,
-                province: formData.province,
-                country: formData.country
-              }
-            },
-            licenseNumber: formData.licenseNumber,
-            vehicleType: formData.vehicleType
-          };
-          
-          result = await DriverApi.register(registrationData);
         }
+        // DRIVER FUNCTIONALITY TEMPORARILY DISABLED
+        // } else if (userType === 'driver') {
+        //   const registrationData = {
+        //     user: {
+        //       username: formData.username,
+        //       password: formData.password,
+        //       contactDetails: {
+        //         email: formData.email,
+        //         phoneNumber: formData.phone,
+        //         postalCode: formData.postalCode,
+        //         street: formData.street,
+        //         city: formData.city,
+        //         province: formData.province,
+        //         country: formData.country
+        //       }
+        //     },
+        //     licenseNumber: formData.licenseNumber,
+        //     vehicleType: formData.vehicleType
+        //   };
+        //   
+        //   result = await DriverApi.register(registrationData);
+        // }
 
         if (result) {
           console.log('Registration successful for', userType, ':', result);
@@ -205,9 +211,11 @@ export default function LoginScreen({ onLogin }) {
             setStoreInfo(result);
           } else if (userType === 'admin') {
             setUser(result.user);
-          } else if (userType === 'driver') {
-            setUser(result.user);
           }
+          // DRIVER FUNCTIONALITY TEMPORARILY DISABLED
+          // } else if (userType === 'driver') {
+          //   setUser(result.user);
+          // }
           
           Alert.alert('Success', `${userType.charAt(0).toUpperCase() + userType.slice(1)} registered successfully`, [
             { text: 'OK', onPress: () => setIsLogin(true) }
@@ -272,7 +280,8 @@ export default function LoginScreen({ onLogin }) {
                 Admin
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* DRIVER FUNCTIONALITY TEMPORARILY DISABLED */}
+            {/* <TouchableOpacity
               style={[styles.userTypeButton, userType === 'driver' && styles.activeUserType]}
               onPress={() => setUserType('driver')}
             >
@@ -280,7 +289,7 @@ export default function LoginScreen({ onLogin }) {
               <Text style={[styles.userTypeText, userType === 'driver' && styles.activeUserTypeText]}>
                 Driver
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           {!isLogin && (
@@ -297,12 +306,13 @@ export default function LoginScreen({ onLogin }) {
                   <Text style={styles.bannerText}>Admin Registration</Text>
                 </>
               )}
-              {userType === 'driver' && (
+              {/* DRIVER FUNCTIONALITY TEMPORARILY DISABLED */}
+              {/* {userType === 'driver' && (
                 <>
                   <Truck size={24} color="#F59E0B" />
                   <Text style={styles.bannerText}>Driver Registration</Text>
                 </>
-              )}
+              )} */}
             </View>
           )}
 
@@ -353,8 +363,9 @@ export default function LoginScreen({ onLogin }) {
                 </View>
               )}
 
+              {/* DRIVER FUNCTIONALITY TEMPORARILY DISABLED */}
               {/* Driver-specific fields */}
-              {userType === 'driver' && (
+              {/* {userType === 'driver' && (
                 <>
                   <View style={styles.inputContainer}>
                     <Truck size={20} color="#6B7280" />
@@ -381,7 +392,7 @@ export default function LoginScreen({ onLogin }) {
                     />
                   </View>
                 </>
-              )}
+              )} */}
 
               {/* Common fields for all user types */}
               <View style={styles.inputContainer}>

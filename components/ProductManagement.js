@@ -79,7 +79,11 @@ export default function ProductManagement() {
         return;
       }
 
+      // Generate a unique product number (similar to your backend Helper.generateId())
+      const productNumber = 'PROD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      
       const productData = {
+        productNumber: productNumber,
         name: formData.name,
         price: parseFloat(formData.price),
         stockQuantity: parseInt(formData.stockQuantity),

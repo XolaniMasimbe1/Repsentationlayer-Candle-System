@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { RetailStoreApi, AdminApi, DriverApi } from '../services';
+import { RetailStoreApi, AdminApi /*, DriverApi - TEMPORARILY DISABLED */ } from '../services';
 
 export function useAuth() {
   const [user, setUser] = useState(null);
@@ -25,10 +25,14 @@ export function useAuth() {
         result = await AdminApi.login({
           user: { username, password }
         });
-      } else if (userType === 'driver') {
-        result = await DriverApi.login({
-          user: { username, password }
-        });
+      } else {
+        // DRIVER FUNCTIONALITY TEMPORARILY DISABLED
+        // } else if (userType === 'driver') {
+        //   result = await DriverApi.login({
+        //     user: { username, password }
+        //   });
+        // }
+        throw new Error('Invalid user type');
       }
       
       if (result) {

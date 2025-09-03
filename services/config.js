@@ -24,7 +24,7 @@
 
 const API_CONFIG = {
   // Base URL for the backend API
-  BASE_URL: 'http://192.168.12.236:8080/CandleSystem',
+  BASE_URL: 'http://192.168.14.8:8080/CandleSystem',
   
   // API Endpoints
   ENDPOINTS: {
